@@ -33,6 +33,15 @@
   :group 'convenience
   :link '(url-link :tag "Github" "https://github.com/conao3/bimove.el"))
 
+;;;###autoload
+(define-minor-mode bimove-mode
+  "Enable `bimove-mode'."
+  :init-value nil
+  :lighter " Bimove"
+  (if bimove-mode
+      1
+    0))
+
 (provide 'bimove)
 
 ;;; bimove.el ends here

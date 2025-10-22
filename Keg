@@ -1,0 +1,9 @@
+;; Keg
+
+(source gnu melpa)
+
+(package
+ (bimove
+  (recipe . (bimove :fetcher github :repo "conao3/bimove.el"))))
+
+(dev-dependency cort)

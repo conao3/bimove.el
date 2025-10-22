@@ -34,16 +34,61 @@
   :link '(url-link :tag "Github" "https://github.com/conao3/bimove.el"))
 
 (declare bimove-mode)
+(defvar-local bimove--line-high -1)
+(defvar-local bimove--line-mid -1)
+(defvar-local bimove--line-low -1)
+
+(defun bimove--setup ()
+  "Setup bimove state."
+  (setq bimove--line-high (line-number-at-pos (window-start)))
+  (setq bimove--line-low (line-number-at-pos (window-end)))
+  (setq bimove--line-mid (/ (+ bimove--line-high bimove--line-low) 2)))
+
+(defun bimove--teardown ()
+  "Teardown bimove state."
+  (setq bimove--line-high -1)
+  (setq bimove--line-low -1)
+  (setq bimove--line-mid -1))
+
+(defun bimove--move (&optional lowerp)
+  "Move to high if LOWERP or to low."
+  (if lowerp
+      (setq bimove--line-high bimove--line-mid)
+    (setq bimove--line-low bimove--line-mid))
+  (setq bimove--line-mid (/ (+ bimove--line-high bimove--line-low) 2))
+  (goto-line bimove--line-mid)
+  (message (format "%d %d %d" bimove--line-high bimove--line-mid bimove--line-low)))
+
+(defun bimove-high ()
+  "Move to high."
+  (interactive)
+  (cl-assert bimove-mode nil "`bimove-mode' is disabled")
+  (bimove--move))
+
+(defun bimove-low ()
+  "Move to low."
+  (interactive)
+  (cl-assert bimove-mode nil "`bimove-mode' is disabled")
+  (bimove--move 'lowerp))
 
 (defun bimove-quit ()
   "Quit `bimove-mode'."
   (interactive)
+  (cl-assert bimove-mode nil "`bimove-mode' is disabled")
   (bimove-mode -1))
 
 (defvar bimove-mode-map
   (let ((map (make-sparse-keymap)))
     (set-keymap-parent map special-mode-map)
+    (keymap-unset map "<")
+    (keymap-unset map ">")
+    (keymap-unset map "DEL")
+    (keymap-unset map "SPC")
+    (keymap-unset map "S-SPC")
+    (keymap-set map "p" #'bimove-high)
+    (keymap-set map "n" #'bimove-low)
     (keymap-set map "q" #'bimove-quit)
+    (keymap-set map "RET" #'bimove-quit)
     map)
   "Keymap for `bimove-mode'.")
 
@@ -54,8 +99,8 @@
   :lighter " Bimove"
   :keymap bimove-mode-map
   (if bimove-mode
-      1
-    0))
+      (bimove--setup)
+    (bimove--teardown)))
 
 (provide 'bimove)
 

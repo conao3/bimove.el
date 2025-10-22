@@ -42,8 +42,42 @@ Sample install code using [[https://github.com/conao3/leaf.el][leaf.el]].
 #+end_src
 
 * Usage
+To use bimove.el, enable ~bimove-mode~ in a buffer. This will activate binary search-based cursor movement.
+
+#+begin_src emacs-lisp
+M-x bimove-mode
+#+end_src
+
+Or bind it to a key:
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-c b") #'bimove-mode)
+#+end_src
+
+Once ~bimove-mode~ is active:
+- Press ~p~ to move to the high range (upper half)
+- Press ~n~ to move to the low range (lower half)
+- Press ~q~ or ~RET~ to quit and stay at the current position
+
+The visible window area will be divided into three colored regions:
+- High range (cyan background) - upper half
+- Mid line (yellow background) - current position
+- Low range (red background) - lower half
 
 * Customize
+You can customize the faces used for highlighting different ranges:
+
+#+begin_src emacs-lisp
+;; Customize high range face
+(set-face-attribute 'bimove-high-face nil :background "#BADFDB" :extend t)
+
+;; Customize mid line face
+(set-face-attribute 'bimove-mid-face nil :background "#FCF9EA" :extend t)
+
+;; Customize low range face
+(set-face-attribute 'bimove-low-face nil :background "#FFA4A4" :extend t)
+#+end_src
+
+Or use ~M-x customize-group RET bimove RET~ to customize via the Emacs customization interface.
 
 * Information
 ** Community

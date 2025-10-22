@@ -99,8 +99,7 @@
   (setq bimove--line-mid (/ (+ bimove--line-high bimove--line-low) 2))
   (goto-line bimove--line-mid)
   (bimove--remove-highlight)
-  (bimove--add-highlight)
-  (message (format "%d %d %d" bimove--line-high bimove--line-mid bimove--line-low)))
+  (bimove--add-highlight))
 
 (defun bimove-high ()
   "Move to high."

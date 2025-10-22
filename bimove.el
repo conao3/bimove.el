@@ -33,11 +33,26 @@
   :group 'convenience
   :link '(url-link :tag "Github" "https://github.com/conao3/bimove.el"))
 
+(declare bimove-mode)
+
+(defun bimove-quit ()
+  "Quit `bimove-mode'."
+  (interactive)
+  (bimove-mode -1))
+
+(defvar bimove-mode-map
+  (let ((map (make-sparse-keymap)))
+    (set-keymap-parent map special-mode-map)
+    (keymap-set map "q" #'bimove-quit)
+    map)
+  "Keymap for `bimove-mode'.")
+
 ;;;###autoload
 (define-minor-mode bimove-mode
   "Enable `bimove-mode'."
   :init-value nil
   :lighter " Bimove"
+  :keymap bimove-mode-map
   (if bimove-mode
       1
     0))

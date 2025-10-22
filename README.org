@@ -36,7 +36,9 @@ Inspired by [[https://github.com/kamecha/bimove][kamecha/bimove]].
 Sample install code using [[https://github.com/conao3/leaf.el][leaf.el]].
 
 #+begin_src emacs-lisp
-  (leaf bimove :ensure t)
+(leaf bimove
+  :vc ( :url "https://github.com/conao3/bimove.el.git")
+  :ensure t)
 #+end_src
 
 * Usage

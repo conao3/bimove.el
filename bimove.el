@@ -33,19 +33,60 @@
   :group 'convenience
   :link '(url-link :tag "Github" "https://github.com/conao3/bimove.el"))
 
+(defface bimove-high-face
+  '((t :background "dark green" :extend t))
+  "Face for high range."
+  :group 'bimove)
+
+(defface bimove-mid-face
+  '((t :background "yellow" :foreground "black" :extend t))
+  "Face for mid line."
+  :group 'bimove)
+
+(defface bimove-low-face
+  '((t :background "dark red" :extend t))
+  "Face for low range."
+  :group 'bimove)
+
 (declare bimove-mode)
 (defvar-local bimove--line-high -1)
 (defvar-local bimove--line-mid -1)
 (defvar-local bimove--line-low -1)
 
+(defun bimove--add-overlay (beg end face)
+  "Add BEG to END line FACE overlay."
+  (save-excursion
+    (let* ((beg-pos (progn (goto-line beg) (line-beginning-position)))
+           (end-pos (progn (goto-line end) (1+ (line-end-position))))
+           (ov (make-overlay beg-pos end-pos)))
+      (overlay-put ov 'bimove t)
+      (overlay-put ov 'face face)
+      ov)))
+
+(defun bimove--add-highlight ()
+  "Add overlay."
+  (bimove--add-overlay bimove--line-high (1- bimove--line-mid) 'bimove-high-face)
+  (bimove--add-overlay bimove--line-mid bimove--line-mid 'bimove-mid-face)
+  (bimove--add-overlay (1+ bimove--line-mid) bimove--line-low 'bimove-low-face))
+
+(defun bimove--remove-highlight ()
+  "Remove overlay."
+  (dolist (ov (overlays-in (point-min) (point-max)))
+    (when (overlay-get ov 'bimove)
+      (delete-overlay ov))))
+
 (defun bimove--setup ()
   "Setup bimove state."
   (setq bimove--line-high (line-number-at-pos (window-start)))
   (setq bimove--line-low (line-number-at-pos (window-end)))
-  (setq bimove--line-mid (/ (+ bimove--line-high bimove--line-low) 2)))
+  (setq bimove--line-mid (/ (+ bimove--line-high bimove--line-low) 2))
+  (bimove--remove-highlight)
+  (bimove--add-highlight)
+  (goto-line bimove--line-mid))
 
 (defun bimove--teardown ()
   "Teardown bimove state."
+  (bimove--remove-highlight)
   (setq bimove--line-high -1)
   (setq bimove--line-low -1)
   (setq bimove--line-mid -1))
@@ -57,6 +98,8 @@
     (setq bimove--line-low bimove--line-mid))
   (setq bimove--line-mid (/ (+ bimove--line-high bimove--line-low) 2))
   (goto-line bimove--line-mid)
+  (bimove--remove-highlight)
+  (bimove--add-highlight)
   (message (format "%d %d %d" bimove--line-high bimove--line-mid bimove--line-low)))
 
 (defun bimove-high ()

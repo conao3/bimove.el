@@ -30,6 +30,8 @@
 
 Move cursor using binary serch.
 
+Inspired by [[https://github.com/kamecha/bimove][kamecha/bimove]].
+
 * Install
 Sample install code using [[https://github.com/conao3/leaf.el][leaf.el]].
 

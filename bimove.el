@@ -34,17 +34,17 @@
   :link '(url-link :tag "Github" "https://github.com/conao3/bimove.el"))
 
 (defface bimove-high-face
-  '((t :background "dark green" :extend t))
+  '((t :background "#BADFDB" :extend t))
   "Face for high range."
   :group 'bimove)
 
 (defface bimove-mid-face
-  '((t :background "yellow" :foreground "black" :extend t))
+  '((t :background "#FCF9EA" :extend t))
   "Face for mid line."
   :group 'bimove)
 
 (defface bimove-low-face
-  '((t :background "dark red" :extend t))
+  '((t :background "#FFA4A4" :extend t))
   "Face for low range."
   :group 'bimove)
 

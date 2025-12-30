@@ -1,130 +1,97 @@
+#+title: bimove.el
 #+author: conao3
-#+date: <2020-03-20 Fri>
 
 [[https://github.com/conao3/bimove.el][https://raw.githubusercontent.com/conao3/files/master/blob/headers/png/bimove.el.png]]
 [[https://github.com/conao3/bimove.el/blob/master/LICENSE][https://img.shields.io/github/license/conao3/bimove.el.svg?style=flat-square]]
 [[https://github.com/conao3/bimove.el/releases][https://img.shields.io/github/tag/conao3/bimove.el.svg?style=flat-square]]
 [[https://github.com/conao3/bimove.el/actions][https://github.com/conao3/bimove.el/workflows/Main%20workflow/badge.svg]]
-[[https://app.codacy.com/project/conao3/bimove.el/dashboard][https://img.shields.io/codacy/grade/62a36f4f04524d5e8c758440e8071c45.svg?logo=codacy&style=flat-square]]
-[[https://www.patreon.com/conao3][https://img.shields.io/badge/patreon-become%20a%20patron-orange.svg?logo=patreon&style=flat-square]]
-[[https://twitter.com/conao_3][https://img.shields.io/badge/twitter-@conao__3-blue.svg?logo=twitter&style=flat-square]]
-[[https://conao3-support.slack.com/join/shared_invite/enQtNjUzMDMxODcyMjE1LWUwMjhiNTU3Yjk3ODIwNzAxMTgwOTkxNmJiN2M4OTZkMWY0NjI4ZTg4MTVlNzcwNDY2ZjVjYmRiZmJjZDU4MDE][https://img.shields.io/badge/chat-on_slack-blue.svg?logo=slack&style=flat-square]]
+
+Binary search-based cursor movement for Emacs.
 
 [[./img/bimove.gif]]
 
-* Table of Contents
-- [[#description][Description]]
-- [[#install][Install]]
-- [[#usage][Usage]]
-- [[#customize][Customize]]
-- [[#information][Information]]
-  - [[#community][Community]]
-  - [[#contribution][Contribution]]
-  - [[#migration][Migration]]
-  - [[#license][License]]
-  - [[#author][Author]]
-  - [[#contributors][Contributors]]
+* Overview
 
-* Description
-[[https://github.com/conao3/bimove.el][https://raw.githubusercontent.com/conao3/files/master/blob/bimove.el/bimove.gif]]
-
-Move cursor using binary serch.
+bimove.el provides an efficient way to navigate within the visible buffer using a binary search approach. Instead of scrolling or jumping line by line, you can quickly narrow down to any visible line by repeatedly halving the search range.
 
 Inspired by [[https://github.com/kamecha/bimove][kamecha/bimove]].
 
-* Install
-Sample install code using [[https://github.com/conao3/leaf.el][leaf.el]].
+* Installation
+
+** Using package-vc (Emacs 29+)
+
+#+begin_src emacs-lisp
+(package-vc-install "https://github.com/conao3/bimove.el")
+#+end_src
+
+** Using leaf.el
 
 #+begin_src emacs-lisp
 (leaf bimove
-  :vc ( :url "https://github.com/conao3/bimove.el.git")
+  :vc (:url "https://github.com/conao3/bimove.el")
   :ensure t)
 #+end_src
 
 * Usage
-To use bimove.el, enable ~bimove-mode~ in a buffer. This will activate binary search-based cursor movement.
+
+Activate bimove-mode to start binary search navigation:
 
 #+begin_src emacs-lisp
 M-x bimove-mode
 #+end_src
 
-Or bind it to a key:
+Or bind it to a key for quick access:
+
 #+begin_src emacs-lisp
 (global-set-key (kbd "C-c b") #'bimove-mode)
 #+end_src
 
-Once ~bimove-mode~ is active:
-- Press ~p~ to move to the high range (upper half)
-- Press ~n~ to move to the low range (lower half)
-- Press ~q~ or ~RET~ to quit and stay at the current position
+** Navigation Keys
 
-The visible window area will be divided into three colored regions:
-- High range (cyan background) - upper half
-- Mid line (yellow background) - current position
-- Low range (red background) - lower half
+Once active, the visible window is divided into three colored regions:
 
-* Customize
-You can customize the faces used for highlighting different ranges:
+| Key       | Action                                    |
+|-----------+-------------------------------------------|
+| ~p~       | Move to the high range (upper half)       |
+| ~n~       | Move to the low range (lower half)        |
+| ~q~ / ~RET~ | Exit and stay at the current position  |
+
+** Visual Indicators
+
+- *High range* (cyan) - upper half of the search area
+- *Mid line* (yellow) - current cursor position
+- *Low range* (red) - lower half of the search area
+
+* Customization
+
+Adjust the highlight colors to match your theme:
 
 #+begin_src emacs-lisp
-;; Customize high range face
 (set-face-attribute 'bimove-high-face nil :background "#BADFDB" :extend t)
-
-;; Customize mid line face
 (set-face-attribute 'bimove-mid-face nil :background "#FCF9EA" :extend t)
-
-;; Customize low range face
 (set-face-attribute 'bimove-low-face nil :background "#FFA4A4" :extend t)
 #+end_src
 
-Or use ~M-x customize-group RET bimove RET~ to customize via the Emacs customization interface.
+Or use the built-in customization interface:
 
-* Information
-** Community
-Any feedback or suggestions are welcome!
-
-You can use github issues, but you can also use [[https://conao3-support.slack.com/join/shared_invite/enQtNjUzMDMxODcyMjE1LWUwMjhiNTU3Yjk3ODIwNzAxMTgwOTkxNmJiN2M4OTZkMWY0NjI4ZTg4MTVlNzcwNDY2ZjVjYmRiZmJjZDU4MDE][Slack]]
-if you want a more casual conversation.
-
-** Contribution
-We welcome PR!
-
-*** Require tools for testing
-- keg
-  #+begin_src shell
-    cd ~/
-    hub clone conao3/keg .keg
-    export PATH="$HOME/.keg/bin:$PATH"
-  #+end_src
-
-*** Running test
-Below operation flow is recommended.
-#+begin_src shell
-  git branch [feature-branch]       # Create branch named [feature-branch]
-  git checkout [feature-branch]     # Checkout branch named [feature-branch]
-
-  # <edit loop>
-  emacs bimove.el             # Edit something you want
-
-  make test                         # Test bimove
-  git commit -am "brabra"           # Commit (auto-run test before commit)
-  # </edit loop>
-
-  hub fork                          # Create fork at GitHub
-  git push [user] [feature-branch]  # Push feature-branch to your fork
-  hub pull-request                  # Create pull-request
+#+begin_src
+M-x customize-group RET bimove RET
 #+end_src
 
-** Migration
+* Contributing
 
-** License
-#+begin_example
-  General Public License Version 3 (GPLv3)
-  Copyright (c) Naoya Yamashita - https://conao3.com
-  https://github.com/conao3/bimove.el/blob/master/LICENSE
-#+end_example
+Contributions are welcome. Please feel free to submit issues and pull requests on GitHub.
 
-** Author
-- Naoya Yamashita ([[https://github.com/conao3][conao3]])
+To run tests locally:
 
-** Contributors
+#+begin_src shell
+make test
+#+end_src
+
+* License
+
+GPLv3. See [[https://github.com/conao3/bimove.el/blob/master/LICENSE][LICENSE]] for details.
+
+* Author
+
+Naoya Yamashita ([[https://github.com/conao3][conao3]])
